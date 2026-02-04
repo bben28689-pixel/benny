@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>BENNY SHOP | รายการสินค้า</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#f1f8e9;
+}
+
+/* Header */
+header{
+  background:#2e7d32;
+  color:white;
+  padding:15px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.cart-icon{
+  position:relative;
+  font-size:26px;
+  cursor:pointer;
+}
+
+#cartCount{
+  position:absolute;
+  top:-8px;
+  right:-10px;
+  background:red;
+  color:white;
+  border-radius:50%;
+  padding:2px 7px;
+  font-size:14px;
+}
+
+/* สินค้า */
+.products{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:15px;
+  padding:20px;
+}
+
+.product{
+  background:white;
+  padding:15px;
+  border-radius:10px;
+  text-align:center;
+}
+
+.product img{
+  width:100%;
+  height:200px;
+  object-fit:cover;
+  border-radius:10px;
+}
+
+.product button{
+  background:#2e7d32;
+  color:white;
+  border:none;
+  padding:8px 15px;
+  margin-top:10px;
+  cursor:pointer;
+  border-radius:5px;
+}
+
+.product button:hover{
+  background:#1b5e20;
+}
+</style>
+
+</head>
+<body>
+
+<!-- ส่วนหัว -->
+<header>
+  <h2>BENNY SHOP</h2>
+
+  <div class="cart-icon" onclick="goCart()">
+    🛒
+    <span id="cartCount">0</span>
+  </div>
+</header>
+
+<!-- รายการสินค้า -->
+<div class="products">
+
+  <div class="product">
+    <img src="images/blacksweater.png">
+    <h4>Black Sweater</h4>
+    <p>ราคา 290 บาท</p>
+    <button onclick="addCart('Black Sweater',290,'images/blacksweater.png')">
+      เพิ่มสินค้า
+    </button>
+  </div>
+
+  <div class="product">
+    <img src="images/Graysweater.png">
+    <h4>Gray Sweater</h4>
+    <p>ราคา 290 บาท</p>
+    <button onclick="addCart('Gray Sweater',290,'images/Graysweater.png')">
+      เพิ่มสินค้า
+    </button>
+  </div>
+
+  <div class="product">
+    <img src="images/greensweater.png">
+    <h4>Green Sweater</h4>
+    <p>ราคา 290 บาท</p>
+    <button onclick="addCart('Green Sweater',290,'images/greensweater.png')">
+      เพิ่มสินค้า
+    </button>
+  </div>
+
+  <div class="product">
+    <img src="images/pinksweater.png">
+    <h4>Pink Sweater</h4>
+    <p>ราคา 290 บาท</p>
+    <button onclick="addCart('Pink Sweater',290,'images/pinksweater.png')">
+      เพิ่มสินค้า
+    </button>
+  </div>
+
+  <div class="product">
+    <img src="images/whitesweater.png">
+    <h4>White Sweater</h4>
+    <p>ราคา 290 บาท</p>
+    <button onclick="addCart('White Sweater',290,'images/whitesweater.png')">
+      เพิ่มสินค้า
+    </button>
+  </div>
+
+</div>
+
+<script>
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+/* เพิ่มสินค้า */
+function addCart(name, price, img){
+  let item = cart.find(i => i.name === name);
+  if(item){
+    item.qty++;
+  }else{
+    cart.push({name, price, img, qty:1});
+  }
+  localStorage.setItem("cart", JSON.stringify(cart));
+  updateCartCount();
+}
+
+/* นับจำนวนสินค้า */
+function updateCartCount(){
+  let count = 0;
+  cart.forEach(i => count += i.qty);
+  document.getElementById("cartCount").innerText = count;
+}
+
+/* ไปหน้าชำระเงิน */
+function goCart(){
+  window.location.href = "shoppingcart.html";
+}
+
+/* โหลดหน้าแล้วอัปเดต */
+updateCartCount();
+</script>
+
+</body>
+</html>

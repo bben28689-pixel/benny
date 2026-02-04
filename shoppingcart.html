@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>BENNY SHOP | คิดเงิน</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#e8f5e9;
+}
+header{
+  background:#2e7d32;
+  color:white;
+  padding:15px;
+}
+.cart-item{
+  background:white;
+  margin:10px;
+  padding:10px;
+  display:flex;
+  border-radius:10px;
+}
+.cart-item img{
+  width:80px;
+  margin-right:10px;
+}
+button{
+  background:#2e7d32;
+  color:white;
+  border:none;
+  padding:10px;
+  margin-top:10px;
+  cursor:pointer;
+  border-radius:6px;
+  font-size:16px;
+}
+.delete{
+  background:#6d4c41;
+}
+.summary,.pay-box{
+  background:white;
+  margin:10px;
+  padding:10px;
+  border-radius:10px;
+}
+.qr{
+  width:200px;
+  display:block;
+  margin:15px auto;
+}
+.action-btn{
+  width:90%;
+  display:block;
+  margin:15px auto;
+}
+.back{
+  background:#6d4c41;
+}
+</style>
+
+</head>
+<body>
+
+<header>
+  <h2>BENNY SHOP – หน้าคิดเงิน</h2>
+</header>
+
+<!-- ตะกร้า -->
+<div id="cart"></div>
+
+<!-- สรุปราคา -->
+<div class="summary" id="summary"></div>
+
+<!-- ช่องทางชำระเงิน -->
+<div class="pay-box">
+  <h3>เลือกช่องทางการชำระเงิน</h3>
+
+  <label>
+    <input type="radio" name="pay" value="cod" onclick="hideQR()">
+    เก็บเงินปลายทาง
+  </label><br><br>
+
+  <label>
+    <input type="radio" name="pay" value="qr" onclick="showQR()">
+    สแกนคิวอาร์โค้ด
+  </label>
+
+  <!-- QR Code -->
+  <div id="qrBox" style="display:none;">
+    <img src="images/QR.png" class="qr">
+    <h3 id="timer" style="text-align:center;">30:00</h3>
+    <p style="text-align:center;">กรุณาสแกนเพื่อชำระเงิน</p>
+  </div>
+</div>
+
+<!-- ปุ่มยืนยัน -->
+<button class="action-btn" onclick="confirmPay()">
+  ยืนยันการชำระเงิน
+</button>
+
+<!-- ปุ่มย้อนกลับ -->
+<button class="action-btn back" onclick="goLogin()">
+  ย้อนกลับหน้า Login
+</button>
+
+<script>
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+let time = 1800;
+let timerStarted = false;
+
+/* แสดงตะกร้า */
+function showCart(){
+  let html="";
+  let total=0;
+
+  cart.forEach((item,i)=>{
+    total += item.price * item.qty;
+    html += `
+      <div class="cart-item">
+        <img src="${item.img}">
+        <div>
+          <b>${item.name}</b><br>
+          ${item.price} บาท x ${item.qty}<br>
+          <button onclick="changeQty(${i},-1)">-</button>
+          <button onclick="changeQty(${i},1)">+</button>
+          <button class="delete" onclick="removeItem(${i})">ลบ</button>
+        </div>
+      </div>
+    `;
+  });
+
+  let vat = total * 0.07;
+  let net = total + vat;
+
+  document.getElementById("cart").innerHTML = html;
+  document.getElementById("summary").innerHTML = `
+    ราคารวม: ${total} บาท<br>
+    ภาษี 7%: ${vat.toFixed(2)} บาท<br>
+    <b>ยอดสุทธิ: ${net.toFixed(2)} บาท</b>
+  `;
+}
+
+/* ปรับจำนวน */
+function changeQty(i,v){
+  cart[i].qty += v;
+  if(cart[i].qty <= 0) cart.splice(i,1);
+  save();
+}
+
+/* ลบสินค้า */
+function removeItem(i){
+  cart.splice(i,1);
+  save();
+}
+
+/* บันทึก */
+function save(){
+  localStorage.setItem("cart", JSON.stringify(cart));
+  showCart();
+}
+
+/* แสดง / ซ่อน QR */
+function showQR(){
+  document.getElementById("qrBox").style.display="block";
+  if(!timerStarted){
+    startTimer();
+    timerStarted = true;
+  }
+}
+function hideQR(){
+  document.getElementById("qrBox").style.display="none";
+}
+
+/* ยืนยันการชำระเงิน */
+function confirmPay(){
+  let pay = document.querySelector('input[name="pay"]:checked');
+  if(!pay){
+    alert("กรุณาเลือกช่องทางการชำระเงิน");
+    return;
+  }
+
+  alert("ระบบบันทึกการชำระเงินเรียบร้อย");
+  localStorage.clear();
+  window.location.href = "login.html";
+}
+
+/* กลับหน้า Login */
+function goLogin(){
+  window.location.href = "login.html";
+}
+
+/* ตัวจับเวลา 30 นาที */
+function startTimer(){
+  setInterval(()=>{
+    let m = Math.floor(time/60);
+    let s = time % 60;
+    document.getElementById("timer").innerText =
+      `${m}:${s<10?'0'+s:s}`;
+    if(time > 0) time--;
+  },1000);
+}
+
+showCart();
+</script>
+
+</body>
+</html>
